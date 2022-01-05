@@ -1,57 +1,53 @@
-import React from 'react';
-import logo from './logo.svg';
-import { Counter } from './features/counter/Counter';
-import './App.css';
+import { useState, useEffect } from 'react';
+import { ThemeProvider } from "styled-components";
+import WebFont from 'webfontloader';
+import { GlobalStyles } from './styles/global';
+import {useTheme} from './theme/useTheme';
+import * as STYLE from './styles/main'
+import Navigation from './components/navigation';
+import Mail from './containers/mail';
+import Sent from './containers/sent';
+import './app.scss'
+import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 
 function App() {
+  // 3: Get the selected theme, font list, etc.
+  const {theme, themeLoaded, getFonts} = useTheme();
+  const [selectedTheme, setSelectedTheme] = useState(theme);
+
+  useEffect(() => {
+    setSelectedTheme(theme);
+   }, [themeLoaded]);
+
+  // 4: Load all the fonts
+  useEffect(() => {
+    WebFont.load({
+      google: {
+        families: getFonts()
+      }
+    });
+  });
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <Counter />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <span>
-          <span>Learn </span>
-          <a
-            className="App-link"
-            href="https://reactjs.org/"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            React
-          </a>
-          <span>, </span>
-          <a
-            className="App-link"
-            href="https://redux.js.org/"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Redux
-          </a>
-          <span>, </span>
-          <a
-            className="App-link"
-            href="https://redux-toolkit.js.org/"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Redux Toolkit
-          </a>
-          ,<span> and </span>
-          <a
-            className="App-link"
-            href="https://react-redux.js.org/"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            React Redux
-          </a>
-        </span>
-      </header>
-    </div>
+    <>
+    {
+      themeLoaded && <ThemeProvider theme={ selectedTheme }>
+        <GlobalStyles/>
+        <Router>
+          <STYLE.Container style={{fontFamily: selectedTheme.font}}>
+            <Navigation />
+            <STYLE.ContainerInner>
+              {/* <Mail /> */}
+                <Routes>
+                  <Route path="/" element={<Mail />} />
+                  <Route path="/sent" element={<Sent />} />
+                </Routes>
+            </STYLE.ContainerInner>
+          </STYLE.Container>
+        </Router>
+      </ThemeProvider>
+    }
+    </>
   );
 }
 

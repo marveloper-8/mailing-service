@@ -6,10 +6,20 @@ import { store } from './app/store';
 import { Provider } from 'react-redux';
 import * as serviceWorker from './serviceWorker';
 
+import * as themes from './theme/schema.json';
+import { setToLS } from './helpers/storage';
+
+const Index = (): any => {
+  setToLS('all-themes', themes);
+  return(
+    <App />
+  )
+}
+
 ReactDOM.render(
   <React.StrictMode>
     <Provider store={store}>
-      <App />
+      <Index />
     </Provider>
   </React.StrictMode>,
   document.getElementById('root')
